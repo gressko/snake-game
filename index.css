@@ -1,0 +1,68 @@
+html {
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+
+header {
+  flex: 1;
+  background-color: #ffb7c5;
+  margin: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: min(3vh, 3vw);
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  background-color: blue;
+  flex-direction: column;
+}
+
+#main {
+  flex: 4;
+  display: flex;
+  background-color: black;
+}
+
+#info {
+  flex: 1;
+  background-color: aqua;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10%;
+  padding-left: 2%;
+  padding-right: 2%;
+  justify-items: start;
+  font-size: min(3vh, 3vw);
+}
+
+#game-container {
+  flex: 4;
+  background-color: bisque;
+  position: relative;
+}
+
+#game {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    width: min(60vw, 100vh);
+    aspect-ratio: 4 / 3;
+    background-color: aquamarine;
+
+}
