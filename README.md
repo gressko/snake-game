@@ -8,6 +8,9 @@ Features:
 - Resize-friendly
 
 Demo:
-https://user-images.githubusercontent.com/107381670/173599339-9c491dc4-da8f-450a-85ec-3763aaa05e48.mov
+
+
+
+https://user-images.githubusercontent.com/107381670/173600359-ce8aca55-a652-40b4-a23f-97b33b5a010c.mov
 
 
