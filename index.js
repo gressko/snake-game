@@ -1,3 +1,4 @@
+// constants and classes
 const Direction = {
   UP: 0,
   DOWN: 1,
@@ -12,6 +13,14 @@ const Speed = {
   SLOW: { tickRate: 400 },
 };
 
+function Coord(row, col) {
+  return {
+    row: row,
+    col: col,
+  };
+}
+
+// speed selectors
 let speed = Speed.MEDIUM;
 document.getElementById("medium").style = "border-style:inset;";
 
@@ -48,13 +57,7 @@ document.getElementById("slow").onclick = () => {
   setMainLoop();
 };
 
-function Coord(row, col) {
-  return {
-    row: row,
-    col: col,
-  };
-}
-
+// game-specific config
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
@@ -65,6 +68,7 @@ const numRows = 15;
 const startingRow = Math.floor(numRows / 2);
 const startingCol = Math.floor(numCols / 2);
 
+// state
 let displayStartScreen = true;
 let highestScore = 0;
 
@@ -97,6 +101,7 @@ function resetGame() {
   updateScores();
 }
 
+// controls
 function keydownHandler(key) {
   switch (key.keyCode) {
     case 38: // arrow up
@@ -113,10 +118,14 @@ function keydownHandler(key) {
       break;
     case 32: // spacebar
       if (displayStartScreen) {
+        // on first page load, space required to start the game
+        // and exit start screen
         displayStartScreen = false;
       } else if (gameOver) {
+        // if gameover, space required to restart game
         resetGame();
       } else {
+        // else space will pause or unpause game
         pause = !pause;
       }
       break;
@@ -133,6 +142,8 @@ function queueDirection(direction) {
     return;
   }
 
+  // only allow snake to turn left or right, it can't move in opposite direction
+  // from its most recent direction i.e. eat its own neck
   if (!isOppositeDirection(queuedDirections[0], direction)) {
     queuedDirections[1] = direction;
   }
@@ -153,12 +164,15 @@ function isOppositeDirection(d1, d2) {
   }
 }
 
+// mainloop holds intervaled function i.e. main game loop
 let mainLoop;
 function setMainLoop() {
+  // must clear old intervaled function when changing tickrate
   clearInterval(mainLoop);
 
   mainLoop = setInterval(function tick() {
-    // only displays on first draw
+    // only displays on first draw; don't update game state until
+    // game has started
     if (displayStartScreen) {
       draw();
       drawStartScreen();
@@ -166,15 +180,20 @@ function setMainLoop() {
     }
 
     if (gameOver) {
+      draw();
       updateScores();
       drawGameOverScreen();
       return;
     }
 
-    if (!pause) {
-      update();
+    if (pause) {
       draw();
+      drawPauseScreen();
+      return;
     }
+
+    update();
+    draw();
   }, speed.tickRate);
 }
 
@@ -183,6 +202,9 @@ function update() {
     return;
   }
 
+  // not the best use of variable name - queuedDirections[1] stores the
+  // NEXT direction that will be used
+  // queuedDirections[0] caches the PREVIOUS direction that was used
   let nextDirection;
   nextDirection = queuedDirections[1];
   queuedDirections[0] = queuedDirections[1];
@@ -208,6 +230,7 @@ function update() {
     cherries.filter((cherryCoord) => overlap(nextCoord, cherryCoord)).length !==
       0;
 
+  // move snake forward by appending next head location
   snake.unshift(nextCoord);
   if (!snakeEatsCherry) {
     snake.pop();
@@ -220,6 +243,8 @@ function update() {
 }
 
 function generateNewCherry() {
+  // naive cherry generation - if we can't find an empty space then
+  // we just try again in the next tick to keep gameplay smooth
   let foundNewCherry = false;
   let tries = 5;
   while (!foundNewCherry && tries > 0) {
@@ -253,7 +278,9 @@ function draw() {
 
   const cellWidth = width / numCols;
   const cellHeight = height / numRows;
-  ctx.fillStyle = "purple";
+  
+  // draw snake
+  ctx.fillStyle = "rgb(125, 158, 205)";
   snake.forEach((snakeCoord) => {
     ctx.fillRect(
       snakeCoord.col * cellWidth,
@@ -263,7 +290,8 @@ function draw() {
     );
   });
 
-  ctx.fillStyle = "red";
+  // draw cherry
+  ctx.fillStyle = "rgb(198, 136, 164)";
   cherries.forEach((snakeCoord) => {
     ctx.fillRect(
       snakeCoord.col * cellWidth,
@@ -294,6 +322,17 @@ function drawGameOverScreen() {
   ctx.fillStyle = "white";
   ctx.font = "15px serif";
   ctx.fillText("Game Over! Press Space to Restart", x, y);
+}
+
+function drawPauseScreen() {
+  const width = canvas.width;
+  const height = canvas.height;
+  const x = 0.2 * width;
+  const y = 0.45 * height;
+
+  ctx.fillStyle = "white";
+  ctx.font = "15px serif";
+  ctx.fillText("Game paused! Press Space to unpause", x, y);
 }
 
 function overlap(c1, c2) {
